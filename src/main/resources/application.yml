@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql:///examsystem?serverTimezone=UTC
+    username: root
+    password: root
+    type : com.alibaba.druid.pool.DruidDataSource
+    filters: stat,wall,log4j
+  thymeleaf:
+    cache: false
+    mode: LEGACYHTML5
+    prefix: classpath:/templates/
+    suffix: .html
+    check-template: true
+    check-template-location: true
+  mvc:
+    date-format: yyyy-MM-dd HH:mm:ss
+
+server:
+  port: 8090

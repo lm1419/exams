@@ -1,0 +1,273 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>学生信息管理</title>
+    <meta name="description" content="这是一个 index 页面">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="icon" type="image/png" th:href="@{/i/favicon.png}">
+    <link rel="apple-touch-icon-precomposed" th:href="@{/i/app-icon72x72@2x.png}">
+    <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+    <link rel="stylesheet" th:href="@{/css/amazeui.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <script th:src="@{/js/jquery.min.js}"></script>
+
+
+</head>
+
+<body data-type="generalComponents">
+
+
+<div th:replace="~{commons/commons::topbartop}"></div>
+
+
+<div class="tpl-page-container tpl-page-header-fixed">
+
+
+    <div th:replace="~{commons/commons::sidebar(active='s_a',fa_active='stu')}"></div>
+
+    <div class="tpl-content-wrapper">
+        <div class="tpl-content-page-title">
+            修改学生信息
+        </div>
+        <ol class="am-breadcrumb">
+            <li><a href="#" class="am-icon-home">首页</a></li>
+            <li><a href="#">学生管理</a></li>
+            <li class="am-active">修改学生信息</li>
+        </ol>
+        <div class="tpl-portlet-components">
+            <div class="portlet-title">
+                <div class="caption font-green bold">
+                    <span class="am-icon-code"></span> 修改学生信息
+                </div>
+
+
+            </div>
+
+            <div class="tpl-block">
+
+                <div class="am-g">
+                    <div class="tpl-form-body tpl-form-line">
+                        <form class="am-form tpl-form-line-form" th:action="@{/student/update}" method="post" onsubmit="return submitwww()">
+                            <div class="am-form-group">
+                                <label for="name" class="am-u-sm-3 am-form-label">学生姓名 <span
+                                        class="tpl-form-line-small-title">StudentName</span></label>
+                                <div class="am-u-sm-9">
+                                    <input type="text" class="tpl-form-input" name="name" id="name"
+                                           th:value="${student.getName()}" onblur="checkName()">
+                                    <small id="nametext" style="color: red"></small>
+                                </div>
+                            </div>
+
+                            <div class="am-form-group">
+                                <label for="sex" class="am-u-sm-3 am-form-label">性别 <span
+                                        class="tpl-form-line-small-title">Author</span></label>
+                                <div class="am-u-sm-9">
+                                    <select data-am-selected="{searchBox: 1}" id="sex" name="sex">
+                                        <option value="男" th:selected="${student.getSex()=='男'?true:false}">男</option>
+                                        <option value="女" th:selected="${student.getSex()=='女'?true:false}">女</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="am-form-group">
+                                <label for="dept" class="am-u-sm-3 am-form-label">系别专业 <span
+                                        class="tpl-form-line-small-title">DeptAndProfess</span></label>
+                                <div class="am-u-sm-9">
+                                    系别：<select data-am-selected="{searchBox: 1}" id="dept" name="">
+                                    <option th:each="dept:${depts}" th:text="${dept.getDeptname()}"
+                                            th:value="${dept.getDeptno()}"
+                                            th:selected="${student.getClasses().getProfess().getDept().getDeptname()==dept.getDeptname()?true:false}"></option>
+                                </select>
+                                    专业：<select data-am-selected="{searchBox: 2}" id="profess" name="">
+                                    <option th:each="pro:${profess}" th:text="${pro.getProfessName()}"
+                                            th:value="${pro.getProfessId()}"
+                                            th:selected="${student.getClasses().getProfess().getProfessId()==pro.getProfessId()?true:false}"></option>
+                                </select>
+                                    班级：<select data-am-selected="{searchBox: 3}" id="classes" name="classes.classesId">
+                                    <option th:each="class:${classes}" th:text="${class.getClassesName()}"
+                                            th:value="${class.getClassesId()}"
+                                            th:selected="${student.getClasses().getClassesName()==class.getClassesName()?true:false}"></option>
+                                </select>
+                                </div>
+                                <script>
+                                    $(function () {
+                                        $("#dept").change(function () {
+                                            var deptno = $("#dept").val();
+                                            if (deptno = "") {
+                                                return;
+                                            }
+                                            $.ajax({
+                                                cache: true,
+                                                type: 'get',
+                                                url: '/student/getPro',
+                                                data: {
+                                                    deptno: $("#dept").val()
+                                                },
+                                                success: function (data) {
+                                                    var profess = $("#profess").empty();
+                                                    $.each(data, function (index, item) {
+                                                        profess.append("<option value=" + item.professId + ">" + item.professName + "</option>")
+                                                    })
+                                                }
+                                            })
+                                        })
+                                        $("#profess").change(function () {
+                                            $.ajax({
+                                                cache: true,
+                                                type: 'get',
+                                                url: '/student/getClasses',
+                                                data: {
+                                                    professId: $("#profess").val()
+                                                },
+                                                success: function (datas) {
+                                                    var classes = $("#classes").empty();
+                                                    $.each(datas, function (index, item) {
+                                                        classes.append("<option value=" + item.classesId + ">" + item.classesName + "</option>")
+                                                    })
+                                                }
+                                            })
+                                        })
+                                    })
+
+
+                                </script>
+                            </div>
+
+                            <div class="am-form-group">
+                                <label class="am-u-sm-3 am-form-label">生日 <span class="tpl-form-line-small-title">Birthday</span></label>
+                                <div class="am-u-sm-9">
+                                    <input type="date" name="birthday" th:value="${#dates.format(student.getBirthday(),'yyyy-MM-dd')}" id="birthday" onblur="checkBirthday()">
+                                    <small th:id="birthdaytext" style="color: red"></small>
+                                </div>
+                            </div>
+
+                            <div class="am-form-group">
+                                <label for="address" class="am-u-sm-3 am-form-label">学生地址 <span
+                                        class="tpl-form-line-small-title">StudentAddress</span></label>
+                                <div class="am-u-sm-9">
+                                    <input type="text" class="tpl-form-input" id="address" name="address" th:value="${student.getAddress()}" onblur="checkAddress()" >
+                                    <small th:id="addresstext" style="color: red"></small>
+                                </div>
+                            </div>
+
+                            <div class="am-form-group">
+                                <label for="password" class="am-u-sm-3 am-form-label">密码 <span
+                                        class="tpl-form-line-small-title" >PassWord</span></label>
+                                <div class="am-u-sm-9">
+                                    <input type="password" class="tpl-form-input" name="password" id="password" onblur="checkPassWord()">
+                                    <small id="passwordtext" style="color: red"></small>
+                                </div>
+                            </div>
+
+                            <div class="am-form-group">
+                                <label for="zzmm" class="am-u-sm-3 am-form-label">政治面貌<span
+                                        class="tpl-form-line-small-title">Author</span></label>
+                                <div class="am-u-sm-9">
+                                    <select data-am-selected="{searchBox: 1}" id="zzmm" name="politapperance">
+                                        <option value="群众" th:selected="${student.getPolitapperance()=='群众'?true:false}">群众</option>
+                                        <option value="共青团员" th:selected="${student.getPolitapperance()=='共青团员'?true:false}">共青团员</option>
+                                        <option value="中共党员" th:selected="${student.getPolitapperance()=='中共党员'?true:false}">中共党员</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="am-form-group">
+                                <label for="note" class="am-u-sm-3 am-form-label">备注</label>
+                                <div class="am-u-sm-9">
+                                    <textarea  rows="5" th:value="${student.getNote()}" id="note" name="note"
+                                               onblur="checkNote()" ></textarea>
+                                    <small id="notetext" style="color: red"></small>
+                                </div>
+                            </div>
+
+                            <div class="am-form-group">
+                                <div class="am-u-sm-9 am-u-sm-push-3">
+                                    <input type="submit" class="am-btn am-btn-primary tpl-btn-bg-color-success "/>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+    <script type="text/javascript">
+        function checkName() {
+            if ($("#name").val() == "") {
+                $("#nametext").html("姓名不得为空！");
+                return false;
+            }
+            return true;
+        }
+
+        function checkClasses() {
+            if ($("#classes").val() == "nul") {
+                return false;
+            }
+            return true;
+        }
+
+        function checkBirthday() {
+            if ($("#birthday").val() == "") {
+                $("#birthdaytext").html("生日不得为空！");
+                return false;
+            }
+            return true;
+        }
+
+        function checkAddress() {
+            if ($("#address").val() == "") {
+                $("#addresstext").html("地址不得为空！");
+                return false;
+            }
+            return true;
+        }
+
+        function checkPassWord() {
+            if ($("#password").val() == "") {
+                $("#passwordtext").html("密码不得为空！");
+                return false;
+            }
+            return true;
+        }
+
+        function checkNote() {
+            if ($("#note").val() == "") {
+                $("#notetext").html("备注不得为空！");
+                return false;
+            }
+            return true;
+        }
+
+        function submitwww() {
+            if (checkNote() & checkPassWord() & checkAddress() & checkBirthday() & checkName() & checkClasses()) {
+                return true;
+            } else {
+                alert("有未填完的必填项哦！");
+                return false;
+            }
+        }
+    </script>
+
+</div>
+
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/amazeui.min.js}"></script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

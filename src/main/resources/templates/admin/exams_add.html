@@ -1,0 +1,337 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>新增课程</title>
+    <meta name="description" content="这是一个 index 页面">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="icon" type="image/png" th:href="@{/i/favicon.png}">
+    <link rel="apple-touch-icon-precomposed" th:href="@{/i/app-icon72x72@2x.png}">
+    <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+    <link rel="stylesheet" th:href="@{/css/amazeui.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/js/amazeui.min.js}"></script>
+    <script th:src="@{/js/app.js}"></script>
+</head>
+
+<body data-type="generalComponents">
+
+
+<div th:replace="~{commons/commons::topbartop}"></div>
+
+
+<div class="tpl-page-container tpl-page-header-fixed">
+    <div th:replace="~{commons/commons::sidebar(active='e_a',fa_active='exam')}"></div>
+
+
+    <div class="tpl-content-wrapper">
+        <div class="tpl-content-page-title">
+            新增课程
+        </div>
+        <ol class="am-breadcrumb">
+            <li><a href="#" class="am-icon-home">首页</a></li>
+            <li><a href="#">课程管理</a></li>
+            <li class="am-active">新增课程</li>
+        </ol>
+        <div class="tpl-portlet-components">
+            <div class="portlet-title">
+                <div class="caption font-green bold">
+                    <span class="am-icon-code"></span> 新增课程
+                </div>
+
+
+            </div>
+            <div class="tpl-block ">
+
+                <div class="am-g tpl-amazeui-form">
+
+
+                    <div class="am-u-sm-12 am-u-md-9">
+                        <form method="post" th:action="@{/exam/add}" onsubmit="return submitwww()"
+                              class="am-form am-form-horizontal">
+                            <div class="am-form-group">
+                                <label for="classes" class="am-u-sm-3 am-form-label">系别 / CourseName</label>
+                                <div class="am-u-sm-9">
+                                    <select data-am-selected="{searchBox: 1}" id="dept" name="">
+                                        <option th:text="请选择" th:value="1" selected></option>
+                                        <option th:each="dept:${session.depts}" th:text="${dept.getDeptname()}"
+                                                th:value="${dept.getDeptno()}"></option>
+                                    </select>
+                                    <small id="coursenametext" style="color:red;"></small>
+                                </div>
+                            </div>
+
+                            <div class="am-form-group">
+                                <label for="dept" class="am-u-sm-3 am-form-label">专业 / Profess</label>
+                                <div class="am-u-sm-9">
+                                    </select>
+                                    <select data-am-selected="{searchBox: 2}" id="profess" name="">
+                                        <option th:text="请选择" th:value="1" selected></option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="am-form-group">
+                                <label for="profess" class="am-u-sm-3 am-form-label">班级 / Classes</label>
+                                <div class="am-u-sm-9">
+                                    <select data-am-selected="{searchBox: 3}" id="classes" name="classes.classesId">
+                                        <option th:text="请选择" value="nul" selected></option>
+                                    </select>
+                                    <small id="classestext" style="color:red;"></small>
+                                </div>
+                            </div>
+
+                            <div class="am-form-group">
+                                <label for="dept" class="am-u-sm-3 am-form-label">课程 / Course</label>
+                                <div class="am-u-sm-9">
+                                    </select>
+                                    <select data-am-selected="{searchBox: 2}" id="course" name="course.courseid">
+                                        <option th:text="请选择" th:value="1" selected></option>
+                                    </select>
+                                    <small id="coursetext" style="color:red;"></small>
+
+                                </div>
+                            </div>
+
+                            <div class="am-form-group">
+                                <label for="examdate" class="am-u-sm-3 am-form-label">考试日期 / Intro</label>
+                                <div class="am-u-sm-9">
+                                    <input id="examdate" style="width: 200px" type="date" name="examdate">
+                                    <small id="starttext" style="color:red;"></small>
+                                </div>
+                            </div>
+
+                            <div class="am-form-group">
+                                <label for="which" class="am-u-sm-3 am-form-label">具体节数 / Juti</label>
+                                <div class="am-u-sm-9">
+                                    <select name="which" id="which" data-am-selected="{searchBox: 1}">
+                                        <option value="nul">请选择</option>
+                                        <small id="whichtext" style="color:red;"></small>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="am-form-group">
+                                <label for="building" class="am-u-sm-3 am-form-label">教学楼</label>
+                                <div class="am-u-sm-9">
+                                    <select name="building" data-am-selected="{searchBox: 1}" id="building">
+                                        <option value="nul">请选择</option>
+                                        <option th:each="building,buildingstat:${session.buildings}" th:value="${building}">
+                                            [[${building}]]
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <script>
+                                $(function () {
+                                    $("#building").change(function () {
+                                        $.ajax({
+                                            url: '/exam/findclassroom',
+                                            method: 'get',
+                                            data: {
+                                                building: $("#building").val()
+                                            },
+                                            success: function (data) {
+                                                var classroom = $("#classroom").empty();
+                                                $.each(data, function (index, item) {
+                                                    classroom.append("<option value=" + item.id + ">" + item.classroomnum + "</option>")
+                                                })
+                                            }
+                                        })
+                                    })
+                                })
+                            </script>
+                            <br>
+                            <br>
+                            <div class="am-form-group">
+                                <label for="classroom" class="am-u-sm-3 am-form-label">教室</label>
+                                <div class="am-u-sm-9">
+                                    <select name="classroom.id" id="classroom" data-am-selected="{searchBox: 1}">
+                                        <option value="nul">请选择</option>
+                                    </select>
+                                    <small id="classroomtext" style="color:red;"></small>
+                                </div>
+                            </div>
+                            <br>
+                            <br>
+                            <div class="am-form-group">
+                                <div class="am-u-sm-9 am-u-sm-push-3">
+                                    <input type="submit" value="添加考试" class="am-btn am-btn-primary"/>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<script>
+    $(function () {
+        $("#dept").change(function () {
+            var deptno = $("#dept").val();
+            if (deptno = "") {
+                return;
+            }
+            $.ajax({
+                cache: true,
+                type: 'get',
+                url: '/student/getPro',
+                data: {
+                    deptno: $("#dept").val()
+                },
+                success: function (data) {
+                    var profess = $("#profess").empty();
+                    $.each(data, function (index, item) {
+                        profess.append("<option value=" + item.professId + ">" + item.professName + "</option>")
+                        $("#profess").change(function () {
+                            $.ajax({
+                                cache: true,
+                                type: 'get',
+                                url: '/student/getClasses',
+                                data: {
+                                    professId: $("#profess").val()
+                                },
+                                success: function (datas) {
+                                    var classes = $("#classes").empty();
+                                    $.each(datas, function (index, item) {
+                                        classes.append("<option value=" + item.classesId + ">" + item.classesName + "</option>")
+                                    })
+                                }
+                            });
+                            $.ajax({
+                                cache: true,
+                                type: 'get',
+                                url: '/exam/getCourse',
+                                data: {
+                                    professid: $("#profess").val()
+                                },
+                                success: function (datas) {
+                                    var course = $("#course").empty();
+                                    $.each(datas, function (index, item) {
+                                        course.append("<option value=" + item.courseid + ">" + item.coursename + "</option>")
+                                    })
+                                }
+                            })
+                        })
+                    })
+                }
+            })
+        });
+        $("#examdate").change(function () {
+                var which = $("#which").empty();
+                which.append("                                        <option value=\"上午第一大节\">上午第一大节</option>\n" +
+                    "                                        <option value=\"上午第二大节\">上午第二大节</option>\n" +
+                    "                                        <option value=\"下午第一大节\">下午第一大节</option>\n" +
+                    "                                        <option value=\"下午第二大节\">下午第二大节</option>")
+            }
+        )
+    })
+
+
+    function checkName() {
+        if ($("#classroom").val() == "nul") {
+            $("#classroomtext").html("教室不得为空！");
+            return false;
+        }
+        $("#classroomtext").html("");
+        return true;
+    }
+
+    function checkClasses() {
+        if ($("#classes").val() == "nul") {
+            $("#classestext").html("请选择系别/专业/班级！");
+            return false;
+        }
+        $("#classestext").html("");
+        return true;
+    }
+
+    function checkCourse() {
+        if ($("#course").val() == "nul") {
+            $("#coursetext").html("请选择课程！");
+            return false;
+        }
+        $("#coursetext").html("");
+        return true;
+    }
+
+    function checkStart() {
+        if ($("#examdate").val() == "") {
+            $("#starttext").html("时间不得为空！");
+            return false;
+        }
+        $("#starttext").html("");
+        return true;
+    }
+
+    function checkWhich() {
+        if ($("#which").val() == "nul") {
+            $("#endtext").html("具体节数不得为空！");
+            return false;
+        }
+        if ($("#classroom").val() == "nul") {
+            return false;
+        }
+        $("#whichtext").html("");
+        return true;
+    }
+
+    function submitwww() {
+        if (checkName() & checkClasses() & checj() & checkStart() & checkWhich()) {
+            console.log(checj());
+            return true;
+        } else {
+            if (checkName() & checkClasses()& checkStart() & checkWhich()){
+                alert("您选择的时间和地点有重复哦，请重新选择！")
+            }else {
+                alert("有未填完的必填项哦！");
+            }
+            return false;
+        }
+    }
+
+    function checj() {
+        var boo = false;
+        var mydata = {
+            examdate: $("#examdate").val(),
+            which: $("#which").val(),
+            classroom: {
+                id: $("#classroom").val()
+            }
+        };
+        $.ajax({
+            url: '/exam/checkexamused',
+            method: 'post',
+            async: false,
+            contentType: 'application/json;charset=utf-8',
+            data: JSON.stringify(mydata),
+            success:function (data) {
+                if (data.status =="distinct"){
+                    console.log("重复了")
+                    return;
+                }else {
+                    boo=true;
+                }
+            }
+        })
+        return boo;
+    }
+
+</script>
+</body>
+
+</html>
